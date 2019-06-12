@@ -1,0 +1,9 @@
+{
+  "color": {
+    "font": {
+      "base"     : { "value": "foo" },
+      "secondary": { "value": "bar" },
+      "tertiary" : { "value": "baz" }
+    }
+  }
+}

@@ -8,6 +8,7 @@
     "react-scripts": "3.0.1"
   },
   "scripts": {
+    "watch": "watch 'node src/sketchData.js && style-dictionary build' design",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -27,5 +28,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sketch-constructor": "^1.2.0",
+    "style-dictionary": "^2.8.0",
+    "watch": "^1.0.2"
   }
 }

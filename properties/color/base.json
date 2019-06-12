@@ -1,0 +1,11 @@
+{
+  "color": {
+    "base": {
+      "Primary": "#4a90e2",
+      "Secondary": "#00d77c",
+      "Grey1": "#d8d8d8",
+      "Grey 2": "#c1c1c1",
+      "Grey3": "#9a9a9a"
+    }
+  }
+}
