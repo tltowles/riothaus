@@ -1,68 +1,113 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Basic Style Dictionary
 
-## Available Scripts
+This example code is bare-bones to show you what this framework can do. If you have the style-dictionary module installed globally, just cd into this directory and run:
+```bash
+style-dictionary build
+```
 
-In the project directory, you can run:
+You should see something like this output:
+```
+Reading config file from ./config.json
+Building all platforms
 
-### `npm start`
+scss
+✔︎ build/scss/_variables.scss
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+android
+✔︎ build/android/font_dimens.xml
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+ios
+✔︎ build/ios/StyleDictionaryColor.h
+✔︎ build/ios/StyleDictionaryColor.m
+```
 
-### `npm test`
+Pat yourself on the back, you just built your first style dictionary! Moving on, take a look at what we have built. This should have created a build directory and it should look like this:
+```
+├── android/
+│   ├── font_dimens.xml
+│   ├── colors.xml
+├── scss/
+│   ├── _variables.scss
+├── ios/
+│   ├── StyleDictionaryColor.h
+│   ├── StyleDictionaryColor.m
+```
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you open `config.json` you will see there are 3 platforms defined: scss, android, ios. Each platform has a transformGroup, buildPath, and files. The buildPath and files of the platform should match up to the files what were built. The files built should look like these:
 
-### `npm run build`
+**Android**
+```xml
+<!-- font_dimens.xml -->
+<resources>
+  <dimen name="size_font_small">12.00sp</dimen>
+  <dimen name="size_font_medium">16.00sp</dimen>
+  <dimen name="size_font_large">32.00sp</dimen>
+  <dimen name="size_font_base">16.00sp</dimen>
+</resources>
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<!-- colors.xml -->
+<resources>
+  <color name="color_base_gray_light">#CCCCCC</color>
+  <color name="color_base_gray_medium">#999999</color>
+  <color name="color_base_gray_dark">#111111</color>
+  <color name="color_font_base">#111111</color>
+  <color name="color_font_secondary">#999999</color>
+  <color name="color_font_tertiary">#CCCCCC</color>
+</resources>
+```
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+**SCSS**
+```scss
+// variables.scss
+$color-base-gray-light: #CCCCCC;
+$color-base-gray-medium: #999999;
+$color-base-gray-dark: #111111;
+$color-font-base: #111111;
+$color-font-secondary: #999999;
+$color-font-tertiary: #CCCCCC;
+$size-font-small: 0.75rem;
+$size-font-medium: 1rem;
+$size-font-large: 2rem;
+$size-font-base: 1rem;
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**iOS**
+```objc
+@implementation StyleDictionaryColor
 
-### `npm run eject`
++ (UIColor *)color:(StyleDictionaryColorName)colorEnum{
+  return [[self values] objectAtIndex:colorEnum];
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
++ (NSArray *)values {
+  static NSArray* colorArray;
+  static dispatch_once_t onceToken;
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  dispatch_once(&onceToken, ^{
+    colorArray = @[
+[UIColor colorWithRed:0.80f green:0.80f blue:0.80f alpha:1.0f],
+[UIColor colorWithRed:0.60f green:0.60f blue:0.60f alpha:1.0f],
+[UIColor colorWithRed:0.07f green:0.07f blue:0.07f alpha:1.0f],
+[UIColor colorWithRed:0.07f green:0.07f blue:0.07f alpha:1.0f],
+[UIColor colorWithRed:0.60f green:0.60f blue:0.60f alpha:1.0f],
+[UIColor colorWithRed:0.80f green:0.80f blue:0.80f alpha:1.0f]
+    ];
+  });
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  return colorArray;
+}
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+@end
+```
 
-## Learn More
+Pretty nifty! This shows a few things happening:
+1. The build system does a deep merge of all the property JSON files defined in the `source` attribute of `config.json`. This allows you to split up the property JSON files however you want. There are 2 JSON files with `color` as the top level key, but they get merged properly.
+1. The build system resolves references to other style properties. `{size.font.medium.value}` gets resolved properly
+1. The build system handles references to property values in other files as well as you can see in `properties/color/font.json`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Now lets make a change and see how that affects things. Open up `properties/color/base.json` and change `"#111111"` to `"#000000"`. After you make that change, save the file and re-run the build command `style-dictionary build`. Open up the build files and take a look.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Huzzah!**
 
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Now go forth and create! Take a look at all the built-in [transforms](https://amzn.github.io/style-dictionary/#/transforms?id=pre-defined-transforms) and [formats](https://amzn.github.io/style-dictionary/#/formats?id=pre-defined-formats).
+# riothaus
